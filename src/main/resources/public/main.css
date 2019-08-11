@@ -1,0 +1,20 @@
+@media ( min-width : 600px ){
+    #main {
+        display: flex;
+    }
+    #body {
+        flex: 1;
+        margin: 0 10px 0 0;
+    }
+    #sidebar {
+        width: 200px;
+        background-color: #eee;
+    }
+    .datetime {
+        font-size: 79%;
+        color: #666;
+    }
+    .body {
+        white-space: pre-line;
+    }
+}
