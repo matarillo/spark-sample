@@ -94,6 +94,6 @@ public class Program implements SparkApplication {
 
     private String getContextPath(Request req) {
         ServletContext ctx = req.session().raw().getServletContext();
-        return ctx.getContextPath();
+        return (ctx != null) ? ctx.getContextPath() : "";
     }
 }
