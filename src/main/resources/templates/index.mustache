@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <title>Posts</title>
-  <link rel="stylesheet" href="/main.css">
+  <link rel="stylesheet" href="{{root}}/main.css">
 </head>
 <body>
-<h1><a href="/">Blog</a></h1>
+<h1><a href="{{root}}/">Blog</a></h1>
 {{#year}}
 <h2>{{year}}年{{month}}月</h2>
 {{/year}}
@@ -30,7 +30,7 @@
     <h2>Archives</h2>
     <ul>
 {{#groups}}
-      <li><a href="/archive/{{year}}/{{month}}/">{{year}}年{{month}}月（{{count}}）</a></li>
+      <li><a href="{{root}}/archive/{{year}}/{{month}}/">{{year}}年{{month}}月（{{count}}）</a></li>
 {{/groups}}
     </ul>
   </div>

@@ -20,15 +20,21 @@ public class Sql2oBuilder {
     }
 
     public Sql2o build() {
-        String jdbcUrl = config.getString("jdbc.url");
-        String jdbcUser = config.getString("jdbc.user");
-        String jdbcPassword = config.getString("jdbc.password");
-        Sql2o sql2o = new Sql2o(jdbcUrl, jdbcUser, jdbcPassword, new PostgresQuirks() {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        PostgresQuirks quirks = new PostgresQuirks() {
             {
                 converters.put(OffsetDateTime.class, new OffsetDateTimeConverter());
                 converters.put(UUID.class, new UUIDConverter());
             }
-        });
+        };
+        String jdbcUrl = config.getString("jdbc.url");
+        String jdbcUser = config.getString("jdbc.user");
+        String jdbcPassword = config.getString("jdbc.password");
+        Sql2o sql2o = new Sql2o(jdbcUrl, jdbcUser, jdbcPassword, quirks);
         return sql2o;
     }
 
