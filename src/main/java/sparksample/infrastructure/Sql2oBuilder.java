@@ -1,7 +1,7 @@
+package sparksample.infrastructure;
+
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.typesafe.config.Config;
@@ -13,6 +13,7 @@ import org.sql2o.converters.UUIDConverter;
 import org.sql2o.quirks.PostgresQuirks;
 
 public class Sql2oBuilder {
+
     private final Config config;
 
     public Sql2oBuilder(Config config) {
@@ -27,7 +28,7 @@ public class Sql2oBuilder {
         }
         PostgresQuirks quirks = new PostgresQuirks() {
             {
-                converters.put(OffsetDateTime.class, new OffsetDateTimeConverter());
+                converters.put(LocalDateTime.class, new LocalDateTimeConverter());
                 converters.put(UUID.class, new UUIDConverter());
             }
         };
@@ -38,21 +39,18 @@ public class Sql2oBuilder {
         return sql2o;
     }
 
-    private static class OffsetDateTimeConverter implements Converter<OffsetDateTime> {
+    private static class LocalDateTimeConverter implements Converter<LocalDateTime> {
 
         @Override
-        public OffsetDateTime convert(Object val) throws ConverterException {
-            Timestamp tsUTC = (Timestamp)val;
-            Instant instant = tsUTC.toInstant();
-            OffsetDateTime odt = OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
-            return odt;
+        public LocalDateTime convert(Object val) throws ConverterException {
+            Timestamp timestamp = (Timestamp)val;
+            return timestamp.toLocalDateTime();
         }
 
         @Override
-        public Object toDatabaseParam(OffsetDateTime val) {
-            Instant instant = val.toInstant();
-            Timestamp tsUTC = Timestamp.from(instant);
-            return tsUTC;
-		}
+        public Object toDatabaseParam(LocalDateTime val) {
+            return Timestamp.valueOf(val);
+        }
+
     }
 }

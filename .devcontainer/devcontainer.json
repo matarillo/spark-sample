@@ -1,0 +1,11 @@
+{
+    "name": "Java11 with PostgreSQL13",
+    "workspaceFolder": "/workspace",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "java11",
+    "settings": {},
+    "extensions": [
+        "redhat.java",
+        "gabrielbb.vscode-lombok"
+    ]
+}

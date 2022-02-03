@@ -1,3 +1,5 @@
+package sparksample.model;
+
 import lombok.Data;
 
 @Data

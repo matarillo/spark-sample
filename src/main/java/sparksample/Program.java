@@ -1,25 +1,37 @@
+package sparksample;
+
+import static spark.Spark.get;
+import static spark.Spark.staticFiles;
+
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
-import javax.servlet.ServletContext;
 
 import com.typesafe.config.ConfigFactory;
 
 import org.sql2o.Sql2o;
+import org.thymeleaf.context.Context;
 
 import spark.ModelAndView;
 import spark.Request;
+import spark.TemplateEngine;
 import spark.servlet.SparkApplication;
-import spark.template.mustache.MustacheTemplateEngine;
-import static spark.Spark.*;
+import spark.template.thymeleaf.ThymeleafTemplateEngine;
+import sparksample.infrastructure.Sql2oBuilder;
+import sparksample.infrastructure.Sql2oDao;
+import sparksample.model.BlogPost;
+import sparksample.model.Pagenation;
+import sparksample.model.PostGroup;
 
 public class Program implements SparkApplication {
+
+    private static final TemplateEngine templateEngine = new ThymeleafTemplateEngine(); // link expressions are unavailable.
+    private final Sql2o db;
+
     public static void main(String[] args) {
         new Program().init();
     }
-
-    private final Sql2o db;
 
     public Program() {
         this.db = new Sql2oBuilder(ConfigFactory.load()).build();
@@ -30,7 +42,6 @@ public class Program implements SparkApplication {
         staticFiles.location("/public");
 
         get("/", (req, res) -> {
-            String root = getContextPath(req);
             int page = getPage(req);
             int pageWidth = 10;
             int offset = page * pageWidth;
@@ -39,18 +50,16 @@ public class Program implements SparkApplication {
             List<BlogPost> posts = dao.getPosts(pageWidth, offset);
             List<PostGroup> groups = dao.getGroupsByYearMonth();
             Map<String, Object> model = new HashMap<>();
-            model.put("root", root);
             model.put("posts", posts);
             model.put("groups", groups);
             model.put("pagenation", new Pagenation(page, pageWidth, count));
 
-            return new MustacheTemplateEngine().render(
-                new ModelAndView(model, "index.mustache")
+            return templateEngine.render(
+                new ModelAndView(model, "index")
             );
         });
 
         get("/archive/:year/:month/", (req, res) -> {
-            String root = getContextPath(req);
             int year;
             int month;
             try {
@@ -68,15 +77,14 @@ public class Program implements SparkApplication {
             List<BlogPost> posts = dao.getPostsByYearMonth(year, month, pageWidth, offset);
             List<PostGroup> groups = dao.getGroupsByYearMonth();
             Map<String, Object> model = new HashMap<>();
-            model.put("root", root);
             model.put("year", year);
             model.put("month", month);
             model.put("posts", posts);
             model.put("groups", groups);
             model.put("pagenation", new Pagenation(page, pageWidth, count));
 
-            return new MustacheTemplateEngine().render(
-                new ModelAndView(model, "index.mustache")
+            return templateEngine.render(
+                new ModelAndView(model, "index")
             );
         });
     }
@@ -90,10 +98,5 @@ public class Program implements SparkApplication {
             // ignore
         }
         return page;
-    }
-
-    private String getContextPath(Request req) {
-        ServletContext ctx = req.session().raw().getServletContext();
-        return (ctx != null) ? ctx.getContextPath() : "";
     }
 }

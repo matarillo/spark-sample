@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>Posts</title>
+  <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+<h1><a href="/">Blog</a></h1>
+<h2 th:if="${year}" th:text="|${year}年${month}月|">2022年1月</h2>
+<div id="main">
+  <div id="body">
+    <article th:each="post : ${posts}">
+      <h2 th:text="${post.title}">title</h2>
+      <div class="datetime" th:text="${post.formatPublished}">2022/01/01 12:00:00</div>
+      <div class="body" th:text="${post.body}">body</div>
+    </article>
+    <a th:if="${pagenation.hasNext}" th:href="|.?page=${pagenation.next}|">古い記事</a>
+    <a th:if="${pagenation.hasPrev}" th:href="|.?page=${pagenation.prev}|">新しい記事</a>
+  </div>
+  <div id="sidebar">
+    <h2>Archives</h2>
+    <ul>
+      <li th:each="group : ${groups}">
+        <a th:href="|/archive/${group.year}/${group.month}/|" th:text="|${group.year}年${group.month}月（${group.count}）|">2022年1月（10）</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
