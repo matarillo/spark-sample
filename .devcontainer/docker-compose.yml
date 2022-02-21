@@ -2,7 +2,7 @@ version: '3'
 
 services:
     java11:
-        image: openjdk:11-bullseye
+        image: openjdk:11-jdk-slim-bullseye
         command: /bin/sh -c "while sleep 1000; do :; done"
         volumes:
             - ..:/workspace:cached
